@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { AppRegistry, ListView, Text, View ,TouchableHighlight,Alert,Navigator,
   DeviceEventEmitter,ToolbarAndroid} from 'react-native';
 import WebViewExample from './WebViewExample'
+import Swipeout from 'react-native-swipeout'
 export default class ListViewBasics extends Component {
 
 
@@ -9,12 +10,13 @@ export default class ListViewBasics extends Component {
   constructor(props) {
     super(props);
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    
     this.state = {
       // dataSource: ds.cloneWithRows([
       //   'John', 'Joel', 'James', 'Jimmy', 'Jackson', 'Jillian', 'Julie', 'Devin'
       // ])
         dataSource:ds,
-        data:null
+        data:null,
     };
   }
 
@@ -25,6 +27,25 @@ export default class ListViewBasics extends Component {
   componentDidMount() {        // 组件将要被卸载
     this.subscription = DeviceEventEmitter.addListener('changeList',this._getData.bind(this));
     this._getData();
+}
+
+_deleteBlog(id){
+  let url = 'https://api.leancloud.cn/1.1/classes/csdnblog/'+id;
+  let _this = this;
+  console.log(url);
+  return fetch(url,{
+    method:'DELETE',
+    headers:{
+      'X-LC-Id':'wCALUa8ixi6bA585I6Lem3CH-gzGzoHsz',
+      'X-LC-Key':'gyuNsb8OMLd1fNywfBApzOpC'
+    }
+  }).then((response) => {
+    console.log("删除成功")
+    _this._getData();
+   })
+  .catch((error) => {
+      console.error(error);
+    });
 }
 
 _getData(){
@@ -62,12 +83,26 @@ componentWillUnmount(){
   }
 
   _rendRow(rowData){
+    _this = this;
     return (
-      <TouchableHighlight 
-      onPress={this._pressRow.bind(this,rowData.url,rowData.objectId)}>
-        <Text style={{height:60,borderWidth:1,borderColor:'red',padding:5}}>
-        {rowData.title}</Text>
-      </TouchableHighlight>)
+      <Swipeout right={[
+        {
+          text: '删除',
+          onPress: () =>{
+            console.log('点击删除')
+            _this._deleteBlog(rowData.objectId);
+            console.log('删除完成')
+          }
+        }
+      ]} autoClose={true} >
+      <View>
+        <TouchableHighlight 
+        onPress={this._pressRow.bind(this,rowData.url,rowData.objectId)}>
+          <Text style={{height:60,borderWidth:1,borderColor:'red',padding:5}}>
+          {rowData.title}</Text>
+        </TouchableHighlight>
+      </View>
+      </Swipeout>)
   }
 
   // _pressRow(url){
