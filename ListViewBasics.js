@@ -3,6 +3,7 @@ import { AppRegistry, ListView, Text, View ,TouchableHighlight,Alert,Navigator,
   DeviceEventEmitter,ToolbarAndroid} from 'react-native';
 import WebViewExample from './WebViewExample'
 import Swipeout from 'react-native-swipeout'
+import { StackNavigator,DrawerNavigator,TabNavigator } from 'react-navigation';
 export default class ListViewBasics extends Component {
 
 
@@ -24,13 +25,15 @@ export default class ListViewBasics extends Component {
     title:'ITNews',
   }
 
-  componentDidMount() {        // 组件将要被卸载
-    this.subscription = DeviceEventEmitter.addListener('changeList',this._getData.bind(this));
-    this._getData();
+  componentDidMount() {        // 组件装载完成
+    //const { params } = this.props.navigation.state;
+    this.subscription = DeviceEventEmitter.addListener('changeList'+this.props.tab,this._getData.bind(this));
+    //console.log(params);
+      this._getData(this.props.tab);
 }
 
 _deleteBlog(id){
-  let url = 'https://api.leancloud.cn/1.1/classes/csdnblog/'+id;
+  let url = 'https://api.leancloud.cn/1.1/classes/'+this.props.tab+'/'+id;
   let _this = this;
   console.log(url);
   return fetch(url,{
@@ -48,9 +51,10 @@ _deleteBlog(id){
     });
 }
 
-_getData(){
+_getData(tab){
+  let tb = tab || 'csdnblog';
   console.log('进入数据')
-  fetch('https://api.leancloud.cn/1.1/classes/csdnblog',{
+  fetch('https://api.leancloud.cn/1.1/classes/'+tb,{
    method:'GET',
    headers:{
      'X-LC-Id':'wCALUa8ixi6bA585I6Lem3CH-gzGzoHsz',
@@ -79,7 +83,7 @@ componentWillUnmount(){
   _pressRow(url,id){
     console.log(url+'====='+id); 
     const { navigate } = this.props.navigation;
-    navigate('Detail',{url:url,id:id,});
+    navigate('Detail',{url:url,id:id,tab:this.props.tab,});
   }
 
   _rendRow(rowData){
@@ -120,8 +124,8 @@ componentWillUnmount(){
     if(this.state.data){
       return (
         <View style={ {flexDirection:'column',backgroundColor:"darkgray",
-        marginTop:0,flexWrap:'wrap',height:500,borderColor:'red',borderWidth:1}}>
-          <View style={{paddingTop: 22}}>
+        marginTop:0,flexWrap:'wrap',height:460,borderColor:'red',borderWidth:1}}>
+          <View>
             <ListView
               dataSource={this.state.dataSource.cloneWithRows(this.state.data)}
               renderRow={this._rendRow.bind(this)}

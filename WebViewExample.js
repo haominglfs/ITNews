@@ -37,7 +37,8 @@ export default class WebViewExample extends Component {
   }
 
   _deleteBlog(){
-    let url = 'https://api.leancloud.cn/1.1/classes/csdnblog/'+this.state.id;
+    const { params } = this.props.navigation.state;
+    let url = 'https://api.leancloud.cn/1.1/classes/'+params.tab+'/'+this.state.id;
     console.log(url);
     return fetch(url,{
       method:'DELETE',
@@ -46,7 +47,7 @@ export default class WebViewExample extends Component {
         'X-LC-Key':'gyuNsb8OMLd1fNywfBApzOpC'
       }
     }).then((response) => {
-      DeviceEventEmitter.emit('changeList');
+      DeviceEventEmitter.emit('changeList'+params.tab,params.tab);
      })
     .catch((error) => {
         console.error(error);

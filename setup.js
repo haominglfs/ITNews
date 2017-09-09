@@ -1,28 +1,34 @@
 import React, { Component } from 'react';
 import {View,StyleSheet,Text,AppRegistry} from 'react-native'
 import ListViewBasics from './ListViewBasics'
-import { StackNavigator,navigation } from 'react-navigation';
 import WebViewExample from './WebViewExample';
+import { StackNavigator,DrawerNavigator,TabNavigator} from 'react-navigation';
 
 
-export default class AwesomeProject extends Component {
-
-    constructor(props){
-      super(props);
-    }
-
-      render() {
-        return (
-          <ListViewBasics></ListViewBasics>
-        )
+class CsdnScreen extends React.Component {
+  render() {
+    return <ListViewBasics tab='csdnblog' navigation={this.props.navigation}></ListViewBasics>
   }
-
-
 }
 
+class TtScreen extends React.Component {
+  render() {
+    return <ListViewBasics tab='ttblog' navigation={this.props.navigation}></ListViewBasics>
+  }
+}
+
+const MainScreenNavigator = TabNavigator({
+  csdn: { screen: CsdnScreen },
+  开发者头条: { screen: TtScreen },
+});
+
+MainScreenNavigator.navigationOptions = {
+  title: 'ITNews',
+};
+
 const app = StackNavigator({
-  Home: { screen: ListViewBasics },
-  Detail:{ screen:WebViewExample},
+ Home: { screen: MainScreenNavigator },
+ Detail:{ screen:WebViewExample},
 });
 
 AppRegistry.registerComponent('AwesomeProject', () => app);
