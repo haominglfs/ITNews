@@ -54,12 +54,13 @@ _deleteBlog(id){
 _getData(tab){
   let tb = tab || 'csdnblog';
   console.log('进入数据')
-  fetch('https://api.leancloud.cn/1.1/classes/'+tb,{
+  fetch('https://api.leancloud.cn/1.1/classes/'+tb+'?order=-createdAt',{
    method:'GET',
    headers:{
      'X-LC-Id':'wCALUa8ixi6bA585I6Lem3CH-gzGzoHsz',
      'X-LC-Key':'gyuNsb8OMLd1fNywfBApzOpC',
      'Content-Type': 'application/json',
+     
    }
  }).then((response) => {
       return response.json();
